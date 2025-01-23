@@ -30,47 +30,25 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import SwiftUI
+import Foundation
 
-struct WelcomeView: View {
-  var body: some View {
-    ZStack {
-      VStack {
-        HeaderView(titleText: "Welcome")
-        Spacer()
-        Button("History") { }
-          .padding(.bottom)
-      }
-
-      VStack {
-        HStack(alignment: .bottom) {
-          VStack(alignment: .leading) {
-            Text("Get fit")
-              .font(.largeTitle)
-            Text("with high intensity interval training")
-              .font(.headline)
-          }
-          Image("step-up")
-            .resizedToFill(width: 240, height: 240)
-            .clipShape(Circle())
-        }
-
-        Button(action: { }) {
-          Text("Get Started")
-          Image(systemName: "arrow.right.circle")
-        }
-        .font(.title2)
-        .padding()
-        .background(
-          RoundedRectangle(cornerRadius: 20)
-          .stroke(Color.gray, lineWidth: 2))
-      }
+extension HistoryStore {
+    mutating func createDevData() {
+        // Development data
+        exerciseDays = [
+            ExerciseDay(
+                date: Date().addingTimeInterval(-86400),
+                exercises: [
+                    Exercise.exercises[0].exerciseName,
+                    Exercise.exercises[1].exerciseName,
+                    Exercise.exercises[2].exerciseName
+                ]),
+            ExerciseDay(
+                date: Date().addingTimeInterval(-86400 * 2),
+                exercises: [
+                    Exercise.exercises[1].exerciseName,
+                    Exercise.exercises[0].exerciseName
+                ])
+        ]
     }
-  }
-}
-
-struct WelcomeView_Previews: PreviewProvider {
-  static var previews: some View {
-    WelcomeView()
-  }
 }
