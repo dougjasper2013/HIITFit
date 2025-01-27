@@ -67,8 +67,6 @@ struct ExerciseView: View {
 
     }
     
-    @State private var rating = 0
-    
     @State private var showSuccess = false
     @EnvironmentObject var history: HistoryStore
 
@@ -104,7 +102,8 @@ struct ExerciseView: View {
                   )
                 }
                 Spacer()
-                RatingView(rating: $rating) // Move RatingView below Spacer
+                RatingView(exerciseIndex: index)
+                // Move RatingView below Spacer
                   .padding()
 
                 Button("History") { }
