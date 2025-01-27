@@ -35,15 +35,41 @@ import SwiftUI
 struct ExerciseView: View {
     let videoNames = ["squat", "step-up", "burpee", "sun-salute"]
     let exerciseNames = ["Squat", "Step Up", "Burpee", "Sun Salute"]
+    @Binding var selectedTab: Int
     let index: Int
     var exercise: Exercise {
       Exercise.exercises[index]
     }
     let interval: TimeInterval = 30
+    var lastExercise: Bool {
+      index + 1 == Exercise.exercises.count
+    }
+    var startButton: some View {
+      Button("Start Exercise") { }
+    }
+
+    var doneButton: some View {
+        Button("Done") {
+          if lastExercise {
+            showSuccess.toggle()
+          } else {
+            selectedTab += 1
+          }
+        }
+
+    }
+    
+    @State private var rating = 0
+    
+    @State private var showSuccess = false
+
     var body: some View {
         GeometryReader { geometry in
             VStack {
-                HeaderView(titleText: exercise.exerciseName)
+                HeaderView(
+                  selectedTab: $selectedTab,
+                  titleText: Exercise.exercises[index].exerciseName)
+
                     .padding(.bottom)
                 
                 VideoPlayerView(videoName: exercise.videoName)
@@ -52,11 +78,17 @@ struct ExerciseView: View {
                 Text(Date().addingTimeInterval(interval), style: .timer)
                   .font(.system(size: geometry.size.height * 0.07))
 
-                Button("Start/Done") { }
-                  .font(.title3)
-                  .padding()
+                HStack(spacing: 150) {
+                  startButton
+                  doneButton.sheet(isPresented: $showSuccess) {
+                      SuccessView(selectedTab: $selectedTab)
+                          .presentationDetents([.medium, .large])
+                    }
+                }
+                .font(.title3)
+                .padding()
 
-                RatingView()
+                RatingView(rating: $rating)
                   .padding()
 
                 Spacer()
@@ -70,7 +102,9 @@ struct ExerciseView: View {
 }
 
 #Preview {
-    ExerciseView(index: 0)
+    ExerciseView(selectedTab: .constant(3), index: 3)
+
+
 }
 
 
