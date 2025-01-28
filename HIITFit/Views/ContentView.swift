@@ -43,8 +43,7 @@ struct ContentView: View {
           ExerciseView(selectedTab: $selectedTab, index: index)
             .tag(index)  // 3
         }
-      }
-      .environmentObject(HistoryStore())
+      }      
       .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
     }
 
