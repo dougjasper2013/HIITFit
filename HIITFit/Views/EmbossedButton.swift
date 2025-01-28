@@ -32,72 +32,53 @@
 
 import SwiftUI
 
-struct RatingView: View {
-  let exerciseIndex: Int
-  @AppStorage("ratings") private var ratings = ""
-  @State private var rating = 0
-  let maximumRating = 5
+enum EmbossedButtonShape {
+  case round, capsule
+}
 
-  let onColor = Color.red
-  let offColor = Color.gray
+struct EmbossedButtonStyle: ButtonStyle {
+  var buttonShape = EmbossedButtonShape.capsule
 
-  init(exerciseIndex: Int) {
-    self.exerciseIndex = exerciseIndex
-    let desiredLength = Exercise.exercises.count
-    if ratings.count < desiredLength {
-      ratings = ratings.padding(
-        toLength: desiredLength,
-        withPad: "0",
-        startingAt: 0)
-    }
-  }
-
-  // swiftlint:disable:next strict_fileprivate
-  fileprivate func convertRating() {
-    let index = ratings.index(
-      ratings.startIndex,
-      offsetBy: exerciseIndex)
-    let character = ratings[index]
-    rating = character.wholeNumberValue ?? 0
-  }
-
-  var body: some View {
-    HStack {
-      ForEach(1 ..< maximumRating + 1, id: \.self) { index in
-        Button(action: {
-          updateRating(index: index)
-        }, label: {
-          Image(systemName: "waveform.path.ecg")
-            .foregroundColor(
-              index > rating ? offColor : onColor)
-            .font(.body)
+  func makeBody(configuration: Configuration) -> some View {
+    let shadow = Color("drop-shadow")
+    let highlight = Color("drop-highlight")
+    return configuration.label
+      .padding(10)
+      .background(
+        GeometryReader { geometry in
+          shape(size: geometry.size)
+            .foregroundColor(Color("background"))
+            .shadow(color: shadow, radius: 1, x: 2, y: 2)
+            .shadow(color: highlight, radius: 1, x: -2, y: -2)
+            .offset(x: -1, y: -1)
         })
-        .buttonStyle(EmbossedButtonStyle(buttonShape: .round))
-        .onChange(of: ratings) { _ in
-          convertRating()
-        }
-        .onAppear {
-          convertRating()
-        }
-      }
-    }
-    .font(.largeTitle)
   }
 
-  func updateRating(index: Int) {
-    rating = index
-    let index = ratings.index(
-      ratings.startIndex,
-      offsetBy: exerciseIndex)
-    ratings.replaceSubrange(index...index, with: String(rating))
+  @ViewBuilder
+  func shape(size: CGSize) -> some View {
+    switch buttonShape {
+    case .round:
+      Circle()
+        .stroke(Color("background"), lineWidth: 2)
+        .frame(
+          width: max(size.width, size.height),
+          height: max(size.width, size.height))
+        .offset(x: -1)
+        .offset(y: -max(size.width, size.height) / 2 +
+          min(size.width, size.height) / 2)
+    case .capsule:
+      Capsule()
+        .stroke(Color("background"), lineWidth: 2)
+    }
   }
 }
 
-struct RatingView_Previews: PreviewProvider {
-  @AppStorage("ratings") static var ratings: String?
+struct EmbossedButton_Previews: PreviewProvider {
   static var previews: some View {
-    ratings = nil
-    return RatingView(exerciseIndex: 0)
+    Button("History") {}
+      .fontWeight(.bold)
+      .buttonStyle(EmbossedButtonStyle(buttonShape: .round))
+      .padding(40)
       .previewLayout(.sizeThatFits)
   }
 }
