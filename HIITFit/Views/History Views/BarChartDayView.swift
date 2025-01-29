@@ -1,4 +1,4 @@
-/// Copyright (c) 2025 Kodeco LLC
+///// Copyright (c) 2022 Kodeco LLC
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -30,82 +30,31 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
+import Charts
 import SwiftUI
 
-struct HistoryView: View {
-  @EnvironmentObject var history: HistoryStore
-  @Binding var showHistory: Bool
-  @State private var addMode = false
-
-  var headerView: some View {
-    HStack {
-      Button {
-        addMode = true
-      } label: {
-        Image(systemName: "plus")
-      }
-      .padding(.trailing)
-      EditButton()
-      Spacer()
-      Text("History")
-        .font(.title)
-      Spacer()
-      Button {
-        showHistory.toggle()
-      } label: {
-        Image(systemName: "xmark.circle")
-      }
-      .font(.title)
-    }
-  }
-
-  func dayView(day: ExerciseDay) -> some View {
-    DisclosureGroup {
-      BarChartDayView(day: day)
-        .deleteDisabled(true)
-    } label: {
-      Text(day.date.formatted(as: "d MMM YYYY"))
-        .font(.headline)
-    }
-  }
-
-  func exerciseView(day: ExerciseDay) -> some View {
-    ForEach(day.uniqueExercises, id: \.self) { exercise in
-      Text(exercise)
-        .badge(day.countExercise(exercise: exercise))
-    }
-  }
+struct BarChartDayView: View {
+  let day: ExerciseDay
 
   var body: some View {
-    VStack {
-      Group {
-        if addMode {
-          Text("History")
-            .font(.title)
-        } else {
-          headerView
-        }
+    Chart {
+      ForEach(Exercise.names, id: \.self) { name in
+        BarMark(
+          x: .value(name, name),
+          y: .value("Total Count", day.countExercise(exercise: name)))
+        .foregroundStyle(Color("history-bar"))
       }
-      .padding()
-      List($history.exerciseDays, editActions: [.delete]) { $day in
-        dayView(day: day)
-      }
-      if addMode {
-        AddHistoryView(addMode: $addMode)
-          .background(Color.primary.colorInvert()
-            .shadow(color: .primary.opacity(0.5), radius: 7))
-      }
+      RuleMark(y: .value("Exercise", 1))
+        .foregroundStyle(.red)
     }
-    .onDisappear {
-      try? history.save()
-    }
+    .padding()
   }
 }
 
-struct HistoryView_Previews: PreviewProvider {
+struct BarChartDayView_Previews: PreviewProvider {
   static var history = HistoryStore(preview: true)
   static var previews: some View {
-    HistoryView(showHistory: .constant(true))
+    BarChartDayView(day: history.exerciseDays[0])
       .environmentObject(history)
   }
 }

@@ -1,4 +1,4 @@
-/// Copyright (c) 2025 Kodeco LLC
+///// Copyright (c) 2022 Kodeco LLC
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -31,81 +31,44 @@
 /// THE SOFTWARE.
 
 import SwiftUI
+import Charts
 
-struct HistoryView: View {
+struct BarChartWeekView: View {
   @EnvironmentObject var history: HistoryStore
-  @Binding var showHistory: Bool
-  @State private var addMode = false
-
-  var headerView: some View {
-    HStack {
-      Button {
-        addMode = true
-      } label: {
-        Image(systemName: "plus")
-      }
-      .padding(.trailing)
-      EditButton()
-      Spacer()
-      Text("History")
-        .font(.title)
-      Spacer()
-      Button {
-        showHistory.toggle()
-      } label: {
-        Image(systemName: "xmark.circle")
-      }
-      .font(.title)
-    }
-  }
-
-  func dayView(day: ExerciseDay) -> some View {
-    DisclosureGroup {
-      BarChartDayView(day: day)
-        .deleteDisabled(true)
-    } label: {
-      Text(day.date.formatted(as: "d MMM YYYY"))
-        .font(.headline)
-    }
-  }
-
-  func exerciseView(day: ExerciseDay) -> some View {
-    ForEach(day.uniqueExercises, id: \.self) { exercise in
-      Text(exercise)
-        .badge(day.countExercise(exercise: exercise))
-    }
-  }
+  @State private var weekData: [ExerciseDay] = []
 
   var body: some View {
-    VStack {
-      Group {
-        if addMode {
-          Text("History")
-            .font(.title)
-        } else {
-          headerView
-        }
-      }
-      .padding()
-      List($history.exerciseDays, editActions: [.delete]) { $day in
-        dayView(day: day)
-      }
-      if addMode {
-        AddHistoryView(addMode: $addMode)
-          .background(Color.primary.colorInvert()
-            .shadow(color: .primary.opacity(0.5), radius: 7))
+    Chart(weekData) { day in
+      ForEach(Exercise.names, id: \.self) { name in
+        BarMark(
+          x: .value("Date", day.date, unit: .day),
+          y: .value("Total Count", day.countExercise(exercise: name)))
+        .foregroundStyle(by: .value("Exercise", name))
       }
     }
-    .onDisappear {
-      try? history.save()
+    .chartForegroundStyleScale([
+      "Burpee": Color("chart-burpee"),
+      "Squat": Color("chart-squat"),
+      "Step Up": Color("chart-step-up"),
+      "Sun Salute": Color("chart-sun-salute")
+    ])
+    .padding()
+    .onAppear {
+      let firstDate = history.exerciseDays.first?.date ?? Date()
+      let dates = firstDate.previousSevenDays
+      weekData = dates.map { date in
+        // swiftlint:disable:next trailing_closure
+        history.exerciseDays.first(
+          where: { $0.date.isSameDay(as: date) })
+        ?? ExerciseDay(date: date)
+      }
     }
   }
 }
 
-struct HistoryView_Previews: PreviewProvider {
-  static var history = HistoryStore(preview: true)
+struct BarChartWeekView_Previews: PreviewProvider {
   static var previews: some View {
-    HistoryView(showHistory: .constant(true))
-      .environmentObject(history)
+    BarChartWeekView()
+      .environmentObject(HistoryStore(preview: true))
   }
 }
