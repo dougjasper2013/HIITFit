@@ -54,7 +54,9 @@ struct WelcomeView: View {
                 }
                 .font(.title2)
                 .padding()
-              
+                .background(
+                  RoundedRectangle(cornerRadius: 20)
+                  .stroke(Color.gray, lineWidth: 2))
             }
             
             VStack {
