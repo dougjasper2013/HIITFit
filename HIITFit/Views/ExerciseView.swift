@@ -41,18 +41,23 @@ struct ExerciseView: View {
     var exercise: Exercise {
       Exercise.exercises[index]
     }
-    let interval: TimeInterval = 30
+    @State private var timerDone = false
+    @State private var showTimer = false
     var lastExercise: Bool {
       index + 1 == Exercise.exercises.count
     }
     
     var startButton: some View {
-      Button("Start Exercise") { }
+        Button("Start Exercise") {
+          showTimer.toggle()
+        }
     }
 
     var doneButton: some View {
         Button("Done") {
-          if lastExercise {
+            timerDone = false
+            showTimer.toggle()
+            if lastExercise {
             showSuccess.toggle()
           } else {
             selectedTab += 1
@@ -74,20 +79,27 @@ struct ExerciseView: View {
                 VideoPlayerView(videoName: exercise.videoName)
                               .frame(height: geometry.size.height * 0.35)
                               .padding(20)
-                Text(Date().addingTimeInterval(interval), style: .timer)
-                  .font(.system(size: geometry.size.height * 0.07))
                 HStack(spacing: 150) {
-                    startButton
-                    doneButton
-                        .sheet(isPresented: $showSuccess) {
-                            SuccessView(selectedTab: $selectedTab)
-                                .presentationDetents([.medium, .large])
-                        }                }
-                  .font(.title3)
-                  .padding()
-                RatingView(rating: $rating)
-                  .padding()
+                  startButton
+                  doneButton
+                  .disabled(!timerDone)
+                  .sheet(isPresented: $showSuccess) {
+                    SuccessView(selectedTab: $selectedTab)
+                      .presentationDetents([.medium, .large])
+                  }
+                }
+                .font(.title3)
+                .padding()
+
+                if showTimer {
+                  TimerView(
+                    timerDone: $timerDone,
+                    size: geometry.size.height * 0.07
+                  )
+                }
                 Spacer()
+                RatingView(rating: $rating) // Move RatingView below Spacer
+                  .padding()
                 Button("History") {
                   showHistory.toggle()
                 }
