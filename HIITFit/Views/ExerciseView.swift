@@ -9,7 +9,7 @@ struct ExerciseView: View {
     
     var body: some View {
         VStack {
-            Text(exerciseNames[index])
+            HeaderView(exerciseName: exerciseNames[index])
             Text("Video Player")
             Text("Timer")
             Text("Start/Done Button")
@@ -22,3 +22,4 @@ struct ExerciseView: View {
 #Preview {
     ExerciseView(index: 0)
 }
+
