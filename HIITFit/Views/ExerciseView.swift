@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ExerciseView: View {
     let videoNames = ["squat", "step-up", "burpee", "sun-salute"]
-    let exerciseNames = ["Squat", "Step-up", "Burpee", "Sun-salute"]
+    let exerciseNames = ["Squat", "Step-up", "Burpee", "Sun Salute"]
     
     var exercise: Exercise {
         Exercise.exercises[index]
