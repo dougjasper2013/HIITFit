@@ -12,6 +12,8 @@ struct ExerciseView: View {
     
     let index: Int
     
+    let interval: TimeInterval = 3
+    
     var body: some View {
         GeometryReader { geometry in
             VStack {
@@ -23,10 +25,19 @@ struct ExerciseView: View {
                 } else {
                     Text("Coulldn't find \(exercise.videoName).mp4").foregroundColor(.red)
                 }
-                Text("Timer")
-                Text("Start/Done Button")
+                Text(Date().addingTimeInterval(interval), style: .timer)
+                    .font(.system(size: geometry.size.height * 0.07))
+                Button("Start/Done") {
+                    
+                }
+                .font(.title3)
+                .padding()
                 Text("Rating")
-                Text("History Button")
+                Spacer()
+                Button("History") {
+                    
+                }
+                .padding(.bottom)
             }
         }
     }
