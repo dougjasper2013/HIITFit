@@ -6,13 +6,17 @@ struct ExerciseDay: Identifiable {
     var exercises: [String] = []
 }
 
-struct HistoryStore {
+class HistoryStore: ObservableObject {
     var exerciseDays: [ExerciseDay] = []
     
     init() {
         #if DEBUG
         createDevData()
         #endif
+    }
+    
+    func addDoneExercise(_ exerciseName: String) {
+        
     }
 }
 

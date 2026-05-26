@@ -9,9 +9,43 @@ struct ExerciseView: View {
         Exercise.exercises[index]
     }
     
+    @State private var timerDone = false
+    @State private var showTimer = false
+    
+    var lastExercise: Bool {
+        index + 1 == Exercise.exercises.count
+    }
+    
+    var startButton: some View {
+        Button("Start Exercise") {
+            showTimer.toggle()
+        }
+    }
+    
+    var doneButton: some View {
+        Button("Done") {
+//            history.addDoneExercise(Exercise.exercises[index].exerciseName)
+//            timerDone = false
+//            showTimer.toggle()
+//            if lastExercise {
+//                showSuccess.toggle()
+//            }
+//            else {
+//                selectedTab += 1
+//            }
+            selectedTab = lastExercise ? 9 : selectedTab + 1
+        }
+    }
+    
+    @Binding var selectedTab: Int
+    
     let index: Int
     
     let interval: TimeInterval = 3
+    
+    @State private var showSuccess = false
+    
+    @EnvironmentObject var history: HistoryStore
     
     var body: some View {
         GeometryReader { geometry in
@@ -23,8 +57,9 @@ struct ExerciseView: View {
                     .padding(20)
                 Text(Date().addingTimeInterval(interval), style: .timer)
                     .font(.system(size: geometry.size.height * 0.07))
-                Button("Start/Done") {
-                    
+                HStack(spacing: 150) {
+                    startButton
+                    doneButton
                 }
                 .font(.title3)
                 .padding()
@@ -41,6 +76,7 @@ struct ExerciseView: View {
 }
 
 #Preview {
-    ExerciseView(index: 0)
+    ExerciseView(selectedTab: .constant(1), index: 0)
+        .environmentObject(HistoryStore())
 }
 
