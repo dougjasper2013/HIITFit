@@ -2,9 +2,10 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var selectedTab = 9
   var body: some View {
       TabView {
-          WelcomeView() // was Text("Welcome")
+          WelcomeView(selectedTab: $selectedTab) // was Text("Welcome")
           ForEach(Exercise.exercises.indices, id: \.self) { index in
               ExerciseView(index: index) // was Text("Exercise 1")
           }
