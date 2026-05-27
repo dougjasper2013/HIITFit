@@ -47,6 +47,8 @@ struct ExerciseView: View {
     
     @EnvironmentObject var history: HistoryStore
     
+    @State private var rating = 0
+    
     var body: some View {
         GeometryReader { geometry in
             VStack {
@@ -63,7 +65,7 @@ struct ExerciseView: View {
                 }
                 .font(.title3)
                 .padding()
-                RatingView()
+                RatingView(rating: $rating)
                     .padding()
                 Spacer()
                 Button("History") {
