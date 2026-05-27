@@ -31,7 +31,7 @@ struct WelcomeView: View {
                 )
             }
             VStack {
-                HeaderView(titleText: "Welcome")
+                HeaderView(selectedTab: $selectedTab, titleText: "Welcome")
                 Spacer()
                 Button("History") { }
                     .padding(.bottom)
